@@ -1,0 +1,21 @@
+:root{
+  --maxw: 900px;
+  --accent: #6b63ff;
+  --muted: #666;
+}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;margin:0;color:#111}
+.container{max-width:var(--maxw);margin:0 auto;padding:1rem}
+.site-header{background:#f6f7ff;padding:1rem 0;border-bottom:1px solid #eee}
+.site-title{margin:0;font-size:1.25rem}
+.site-sub{margin:0;color:var(--muted);font-size:.95rem}
+.site-nav{display:flex;gap:.5rem;padding:.5rem 0;flex-wrap:wrap}
+.nav-btn{background:transparent;border:1px solid #ddd;padding:.5rem .75rem;border-radius:6px;cursor:pointer}
+.nav-btn.active{background:var(--accent);color:white;border-color:var(--accent)}
+.category{padding:1rem 0}
+.muted{color:var(--muted)}
+.site-footer{padding:1rem 0;border-top:1px solid #eee;color:var(--muted)}
+.error{color:#a33}
+.mini-form{display:flex;gap:.5rem;align-items:center}
+.mini-form input{flex:1;padding:.4rem;border:1px solid #ddd;border-radius:4px}
+.mini-form button{padding:.45rem .6rem;border:none;background:var(--accent);color:#fff;border-radius:4px;cursor:pointer}

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Four Categories App</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1 class="site-title">My Notes & Notes-ables</h1>
+      <p class="site-sub">Pick a category to view or edit</p>
+    </div>
+  </header>
+
+  <nav class="site-nav container" aria-label="Category navigation">
+    <button data-partial="partials/secret-message.html" class="nav-btn active">Secret Message</button>
+    <button data-partial="partials/memories.html" class="nav-btn">Memories</button>
+    <button data-partial="partials/messages.html" class="nav-btn">Messages</button>
+    <button data-partial="partials/flirts.html" class="nav-btn">Flirts</button>
+  </nav>
+
+  <main id="category-container" class="container" role="main" aria-live="polite">
+    <!-- partials will be injected here -->
+    <p class="muted">Loading...</p>
+  </main>
+
+  <footer class="site-footer container">
+    <small>&copy; 2026 You</small>
+  </footer>
+
+  <script>
+    // Simple partial loader with tab switching
+    async function loadPartial(url, target) {
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
+        const html = await res.text();
+        target.innerHTML = html;
+      } catch (err) {
+        console.error('Failed to load partial', url, err);
+        target.innerHTML = '<div class="error">Failed to load content.</div>';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const container = document.getElementById('category-container');
+      const buttons = Array.from(document.querySelectorAll('.nav-btn'));
+
+      // click handler to load partial and set active state
+      buttons.forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          buttons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const url = btn.getAttribute('data-partial');
+          await loadPartial(url, container);
+          // optional: update history (simple)
+          history.replaceState({partial: url}, '', '#' + url.split('/').pop().replace('.html', ''));
+        });
+      });
+
+      // Load initial partial: either from hash or the first button
+      const init = (() => {
+        const hash = location.hash.replace('#', '');
+        if (hash) {
+          const matching = buttons.find(b => b.getAttribute('data-partial').endsWith(hash + '.html'));
+          if (matching) return matching;
+        }
+        return buttons[0];
+      })();
+
+      init.click();
+    });
+  </script>
+</body>
+</html>
