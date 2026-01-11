@@ -51,7 +51,7 @@ function closeModal() {
 
 function checkPasscode() {
     const input = document.getElementById('passcode-input').value;
-    const correctCode = "1234"; // Your code
+    const correctCode = "2428"; // Your code
 
     if (input === correctCode) {
         // 1. Hide the modal

@@ -227,7 +227,7 @@ body.dark-mode {
     width: 100%;
     height: 0%; /* Start at 0 */
     background: #ff4d6d;
-    transition: height 3s linear; /* Control the speed here (3 seconds) */
+    transition: height 10s linear; /* Control the speed here (3 seconds) */
 }
 
 .loader-text {
