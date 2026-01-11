@@ -3,54 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Edit</title>
+    <title>Unlock US</title>
+    <link rel="manifest" href="manifest.jso
+    n">
     <link rel="stylesheet" href="style.css">
-    <style>
-        :root { --primary: #ff6b6b; --bg: #1a1a1a; }
-        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: white; overflow-x: hidden; }
-        
-        /* Dashboard Hub */
-        .hub-container { 
-            position: relative; 
-            z-index: 10; /* Ensures content is above the floating hearts */
-            padding: 40px 20px; 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 15px; 
-            max-width: 500px; 
-            margin: auto; 
-        }
-        .hub-card { background: rgba(255,255,255,0.08); backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.1); padding: 25px 15px; border-radius: 20px; text-align: center; cursor: pointer; transition: 0.3s; }
-        .hub-card:active { transform: scale(0.95); background: rgba(255,107,107,0.2); }
-        .hub-card i { font-size: 2rem; display: block; margin-bottom: 10px; }
-        
-        /* SPA Content Overlay */
-        #page-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: var(--bg); padding: 20px; box-sizing: border-box; overflow-y: auto; z-index: 100; }
-        #page-overlay.active { display: block; animation: slideIn 0.4s ease-out; }
-        @keyframes slideIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        
-        .back-btn { background: none; border: 1px solid var(--primary); color: var(--primary); padding: 8px 15px; border-radius: 20px; margin-bottom: 20px; cursor: pointer; }
-        
-        /* Helper classes for loaded content */
-        .memories-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .memories-grid img { width: 100%; border-radius: 10px; }
-        .lock-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; text-align: center;}
-        .lock-item { background: #222; padding: 30px; border-radius: 15px; font-size: 2rem; cursor: pointer; }
-        #timer { font-size: 2rem; color: var(--primary); font-weight: bold; margin-top: 20px; }
-    </style>
 </head>
 <body>
-
-    <div class="floating-container">
-        <div class="symbol s1">❤</div>
-        <div class="symbol s2">∞</div>
-        <div class="symbol s3">❤</div>
-        <div class="symbol s4">❣</div>
-        <div class="symbol s5">❤</div>
-        <div class="symbol s6">∞</div>
-        <div class="symbol s1" style="left: 15%; animation-delay: 6s;">❤</div>
-        <div class="symbol s3" style="left: 55%; animation-delay: 7s;">❣</div>
-        <div class="symbol s5" style="left: 75%; animation-delay: 2s;">∞</div>
+    <div class="floating-container" id="floating-container">
     </div>
 
     <div id="hub" class="hub-container">
@@ -63,54 +22,13 @@
         <div class="hub-card" onclick="loadPage('locks.html')"><i>🔒</i>Open When...</div>
         <div class="hub-card" onclick="loadPage('flirts.html')"><i>😏</i>For You</div>
     </div>
+    <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
 
     <div id="page-overlay">
         <button class="back-btn" onclick="closePage()">← Back</button>
         <div id="content-area"></div>
     </div>
 
-    <script>
-        async function loadPage(fileName) {
-            try {
-                const response = await fetch(fileName);
-                const html = await response.text();
-                document.getElementById('content-area').innerHTML = html;
-                document.getElementById('page-overlay').classList.add('active');
-                
-                if(fileName === 'secret.html') startTimer();
-            } catch (error) {
-                console.error("Error loading page:", error);
-            }
-        }
-
-        function closePage() {
-            document.getElementById('page-overlay').classList.remove('active');
-            document.getElementById('content-area').innerHTML = ''; 
-        }
-
-        function newLine() {
-            const lines = [
-                "Is your name Google? Because you have everything I’m searching for.",
-                "Do you have a map? I keep getting lost in your eyes.",
-                "I’d say God bless you, but it looks like He already did."
-            ];
-            document.getElementById('flirt-text').innerHTML = lines[Math.floor(Math.random() * lines.length)];
-        }
-
-        function startTimer() {
-            const targetDate = new Date("Jan 28, 2026 00:00:00").getTime();
-            const timerEl = document.getElementById("timer");
-            const update = () => {
-                const diff = targetDate - Date.now();
-                if (diff <= 0) { timerEl.innerHTML = "00:00:00"; return; }
-                const h = Math.floor((diff / (1000 * 60 * 60)));
-                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const s = Math.floor((diff % (1000 * 60)) / 1000);
-                timerEl.innerHTML = `${h}h ${m}m ${s}s`;
-            };
-            update();
-            setInterval(update, 1000);
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
