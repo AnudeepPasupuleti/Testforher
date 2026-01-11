@@ -1,4 +1,4 @@
-const CACHE_NAME = 'v2-cache'; // Changing this number forces an update
+const CACHE_NAME = 'v3-cache'; // Changing this number forces an update
 
 self.addEventListener('install', (event) => {
     // Force the waiting service worker to become the active one
