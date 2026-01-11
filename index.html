@@ -4,13 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test Edit</title>
+    <link rel="stylesheet" href="style.css">
     <style>
         :root { --primary: #ff6b6b; --bg: #1a1a1a; }
         body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: white; overflow-x: hidden; }
         
         /* Dashboard Hub */
-        .hub-container { padding: 40px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 500px; margin: auto; }
-        .hub-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 25px 15px; border-radius: 20px; text-align: center; cursor: pointer; transition: 0.3s; }
+        .hub-container { 
+            position: relative; 
+            z-index: 10; /* Ensures content is above the floating hearts */
+            padding: 40px 20px; 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px; 
+            max-width: 500px; 
+            margin: auto; 
+        }
+        .hub-card { background: rgba(255,255,255,0.08); backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.1); padding: 25px 15px; border-radius: 20px; text-align: center; cursor: pointer; transition: 0.3s; }
         .hub-card:active { transform: scale(0.95); background: rgba(255,107,107,0.2); }
         .hub-card i { font-size: 2rem; display: block; margin-bottom: 10px; }
         
@@ -31,9 +41,21 @@
 </head>
 <body>
 
+    <div class="floating-container">
+        <div class="symbol s1">❤</div>
+        <div class="symbol s2">∞</div>
+        <div class="symbol s3">❤</div>
+        <div class="symbol s4">❣</div>
+        <div class="symbol s5">❤</div>
+        <div class="symbol s6">∞</div>
+        <div class="symbol s1" style="left: 15%; animation-delay: 6s;">❤</div>
+        <div class="symbol s3" style="left: 55%; animation-delay: 7s;">❣</div>
+        <div class="symbol s5" style="left: 75%; animation-delay: 2s;">∞</div>
+    </div>
+
     <div id="hub" class="hub-container">
         <div style="grid-column: span 2; text-align: center; margin-bottom: 20px;">
-            <h1>Hi Kavya ❤️</h1>
+            <h1>Hi Idiot ❤️</h1>
             <p>I built this space just for us.</p>
         </div>
         <div class="hub-card" onclick="loadPage('secret.html')"><i>💌</i>Secret Message</div>
@@ -55,7 +77,6 @@
                 document.getElementById('content-area').innerHTML = html;
                 document.getElementById('page-overlay').classList.add('active');
                 
-                // Initialize specific logic after content loads
                 if(fileName === 'secret.html') startTimer();
             } catch (error) {
                 console.error("Error loading page:", error);
@@ -64,10 +85,9 @@
 
         function closePage() {
             document.getElementById('page-overlay').classList.remove('active');
-            document.getElementById('content-area').innerHTML = ''; // Clear content
+            document.getElementById('content-area').innerHTML = ''; 
         }
 
-        // Logic for External Files
         function newLine() {
             const lines = [
                 "Is your name Google? Because you have everything I’m searching for.",
