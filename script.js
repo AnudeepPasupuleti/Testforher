@@ -1,3 +1,5 @@
+// --- 1. CORE NAVIGATION & LOADING ---
+
 async function loadPage(fileName) {
     try {
         const response = await fetch(fileName);
@@ -5,7 +7,14 @@ async function loadPage(fileName) {
         document.getElementById('content-area').innerHTML = html;
         document.getElementById('page-overlay').classList.add('active');
         
-        if(fileName === 'secret.html') startTimer();
+        // Specific logic for Secret Page
+        if(fileName === 'secret.html') {
+            startTimer();
+            // Check if already unlocked previously
+            if (localStorage.getItem('secret_unlocked') === 'true') {
+                revealSecret();
+            }
+        }
     } catch (error) {
         console.error("Error loading page:", error);
     }
@@ -14,6 +23,159 @@ async function loadPage(fileName) {
 function closePage() {
     document.getElementById('page-overlay').classList.remove('active');
     document.getElementById('content-area').innerHTML = ''; 
+    localStorage.removeItem('secret_unlocked');
+}
+
+// --- 2. SECRET PAGE & UNLOCK LOGIC ---
+
+// Event Delegation: This makes the "Unlock" button work even when loaded via fetch
+document.addEventListener('click', function (e) {
+    if (e.target && e.target.id === 'unlock-trigger') {
+        openModal()
+    }
+});
+
+
+function openModal() {
+    const modal = document.getElementById('passcode-modal');
+    if(modal) {
+        modal.classList.remove('hidden');
+        document.getElementById('passcode-input').focus();
+    }
+}
+
+function closeModal() {
+    const modal = document.getElementById('passcode-modal');
+    if(modal) modal.classList.add('hidden');
+}
+
+function checkPasscode() {
+    const input = document.getElementById('passcode-input').value;
+    const correctCode = "1234"; // Your code
+
+    if (input === correctCode) {
+        // 1. Hide the modal
+        closeModal();
+        
+        // 2. Show the loader
+        const loader = document.getElementById('loader-overlay');
+        const liquid = document.getElementById('heart-liquid');
+        loader.classList.remove('hidden');
+
+        // 3. Start filling slowly (using a tiny timeout to ensure the transition triggers)
+        setTimeout(() => {
+            liquid.style.height = "100%";
+        }, 50);
+
+        // 4. Wait for the filling (3s) + a little extra, then show secret
+        setTimeout(() => {
+            loader.classList.add('hidden');
+            revealSecret();
+            // Reset liquid for next time
+            liquid.style.height = "0%";
+        }, 3500); 
+
+    } else {
+        const errorEl = document.getElementById('modal-error');
+        errorEl.classList.remove('hidden');
+    }
+}
+
+function revealSecret() {
+    const lockedView = document.getElementById('locked-view');
+    const unlockedView = document.getElementById('unlocked-view');
+    
+    // 1. Set your secret passcode here
+    const correctPasscode = "kavya2428"; 
+
+
+    // 3. Check if it matches
+    
+        if (lockedView && unlockedView) {
+            lockedView.classList.add('hidden');
+            unlockedView.classList.remove('hidden');
+        }
+    
+}
+
+function startTimer() {
+    const targetDate = new Date("Jan 28, 2026 00:00:00").getTime();
+    const timerEl = document.getElementById("timer");
+    if(!timerEl) return;
+
+    const update = () => {
+        const diff = targetDate - Date.now();
+        // If time is up, unlock automatically
+        if (diff <= 0) { 
+            timerEl.innerHTML = "00:00:00"; 
+            revealSecret();
+            return; 
+        }
+        const h = Math.floor((diff / (1000 * 60 * 60)));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
+        timerEl.innerHTML = `${h}h ${m}m ${s}s`;
+    };
+
+    update();
+    const timerInterval = setInterval(() => {
+        if (!document.getElementById("timer")) {
+            clearInterval(timerInterval);
+            return;
+        }
+        update();
+    }, 1000);
+}
+
+// --- 3. VISUAL EFFECTS (Hearts & Symbols) ---
+
+function createSymbols() {
+    const container = document.getElementById('floating-container');
+    if (!container) return;
+    container.innerHTML = ''; 
+
+    const symbols = ['❤', '∞', '❣', '❤'];
+    for (let i = 0; i < 18; i++) {
+        const span = document.createElement('span');
+        span.classList.add('symbol');
+        span.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
+        span.style.left = (Math.random() * 100) + 'vw';
+        span.style.fontSize = (Math.random() * 20 + 20) + 'px';
+        span.style.animationDuration = (Math.random() * 10 + 10) + 's';
+        span.style.animationDelay = `-${Math.random() * 20}s`;
+        container.appendChild(span);
+    }
+}
+
+// Heart Burst Effect on Click
+document.addEventListener('click', (e) => {
+    // Don't burst if clicking the unlock button to avoid visual clutter
+    if(e.target.id === 'unlock-trigger') return;
+    
+    const count = 12;
+    for (let i = 0; i < count; i++) {
+        const heart = document.createElement('span');
+        heart.innerHTML = '❤';
+        heart.classList.add('heart-particle');
+        heart.style.left = (e.clientX || e.touches?.[0].clientX) + 'px';
+        heart.style.top = (e.clientY || e.touches?.[0].clientY) + 'px';
+        
+        const angle = Math.random() * Math.PI * 2;
+        const dist = Math.random() * 100 + 50;
+        heart.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+        heart.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+        
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 800);
+    }
+});
+
+// --- 4. THEME & UTILITIES ---
+
+function toggleTheme() {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
 }
 
 function newLine() {
@@ -24,148 +186,18 @@ function newLine() {
         "Are you a magician? Because whenever I look at you, everyone else disappears."
     ];
     const textEl = document.getElementById('flirt-text');
-    if(textEl) {
-        textEl.innerHTML = lines[Math.floor(Math.random() * lines.length)];
-    }
+    if(textEl) textEl.innerHTML = lines[Math.floor(Math.random() * lines.length)];
 }
 
-function startTimer() {
-    const targetDate = new Date("Jan 28, 2026 00:00:00").getTime();
-    const timerEl = document.getElementById("timer");
-    if(!timerEl) return;
+// --- 5. INITIALIZATION ---
 
-    const update = () => {
-        const diff = targetDate - Date.now();
-        if (diff <= 0) { timerEl.innerHTML = "00:00:00"; return; }
-        const h = Math.floor((diff / (1000 * 60 * 60)));
-        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const s = Math.floor((diff % (1000 * 60)) / 1000);
-        timerEl.innerHTML = `${h}h ${m}m ${s}s`;
-    };
-    update();
-    setInterval(update, 1000);
-}
-
-/* script.js */
-
-function createFloatingSymbols() {
-    const container = document.getElementById('floating-container');
-    const symbolList = ['❤', '∞', '❣', '❤', '∞']; // Your preferred symbols
-    const symbolCount = 12; // How many symbols you want on screen
-
-    for (let i = 0; i < symbolCount; i++) {
-        const span = document.createElement('span');
-        span.classList.add('symbol');
-        
-        // Randomize Content
-        span.innerText = symbolList[Math.floor(Math.random() * symbolList.length)];
-        
-        // Randomize Horizontal Position (0 to 100%)
-        const randomLeft = Math.floor(Math.random() * 100);
-        span.style.left = `${randomLeft}%`;
-        
-        // Randomize Size (15px to 40px)
-        const randomSize = Math.floor(Math.random() * 25) + 15;
-        span.style.fontSize = `${randomSize}px`;
-        
-        // Randomize Animation Duration (8s to 18s)
-        const randomDuration = Math.floor(Math.random() * 10) + 8;
-        span.style.animationDuration = `${randomDuration}s`;
-        
-        // Randomize Delay so they don't all start at once
-        const randomDelay = Math.floor(Math.random() * 15);
-        span.style.animationDelay = `${randomDelay}s`;
-
-        container.appendChild(span);
-    }
-}
-
-/* Update the createSymbols function in script.js */
-
-/* script.js */
-function createSymbols() {
-    const container = document.querySelector('.floating-container');
-    if (!container) return;
-
-    const symbols = ['❤', '∞', '❣', '❤'];
-    const count = 18; 
-
-    for (let i = 0; i < count; i++) {
-        const span = document.createElement('span');
-        span.classList.add('symbol');
-        span.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
-        
-        // Use vw to ensure they span edge-to-edge
-        span.style.left = (Math.random() * 100) + 'vw';
-        
-        const size = (Math.random() * 20 + 20); 
-        const duration = (Math.random() * 10 + 10); 
-        const delay = (Math.random() * 20); 
-
-        span.style.fontSize = size + 'px';
-        span.style.animationDuration = duration + 's';
-        span.style.animationDelay = `-${delay}s`; // Negative delay makes them start scattered immediately
-
-        container.appendChild(span);
-    }
-}
-
-window.addEventListener('DOMContentLoaded', createSymbols);
-// ... keep your other loadPage, startTimer, and closePage functions
-
-// Call this function when the window loads
-window.onload = () => {
-    createFloatingSymbols();
-    // Keep your existing Service Worker registration here
-};
-
-// ... keep your existing loadPage, closePage, and startTimer functions below
-
-// Register Service Worker for PWA
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
-}
-
-// 1. Dark Mode Toggle
-function toggleTheme() {
-    document.body.classList.toggle('dark-mode');
-    const isDark = document.body.classList.contains('dark-mode');
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-}
-
-// 2. Heart Burst Effect
-function createBurst(e) {
-    const container = document.body;
-    const count = 12; // Number of hearts in the burst
-    
-    for (let i = 0; i < count; i++) {
-        const heart = document.createElement('span');
-        heart.innerHTML = '❤';
-        heart.classList.add('heart-particle');
-        
-        // Position at click/tap location
-        const x = e.clientX || e.touches[0].clientX;
-        const y = e.clientY || e.touches[0].clientY;
-        heart.style.left = x + 'px';
-        heart.style.top = y + 'px';
-        
-        // Random travel distance and direction
-        const angle = Math.random() * Math.PI * 2;
-        const dist = Math.random() * 100 + 50;
-        heart.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
-        heart.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
-        
-        container.appendChild(heart);
-        
-        // Clean up
-        setTimeout(() => heart.remove(), 800);
-    }
-}
-
-// Initialize Theme on Load
 window.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('theme') === 'dark') {
         document.body.classList.add('dark-mode');
     }
-    createSymbols(); // Your existing background hearts
+    createSymbols();
 });
+
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(err => console.log("SW error:", err));
+}
