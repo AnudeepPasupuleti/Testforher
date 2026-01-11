@@ -73,7 +73,7 @@ function checkPasscode() {
             revealSecret();
             // Reset liquid for next time
             liquid.style.height = "0%";
-        }, 3500); 
+        }, 10500); 
 
     } else {
         const errorEl = document.getElementById('modal-error');
